@@ -58,7 +58,18 @@ router.put('/:id', auth, async function (req, res, next) {
 			const task = JSON.parse(reply);
 			res.json(task);
 		}
-	});
+  });
+  
+    client.hdel('tasks', taskId, (err, reply) => {
+			if (err) {
+				console.error('Error deleting task:', err);
+				res.status(500).json({ error: 'Error deleting task' });
+			} else if (reply === 0) {
+				res.status(404).json({ error: 'Task not found' });
+			} else {
+				res.json({ message: 'Task deleted successfully' });
+			}
+		});
 	let todo = await ToDo.findByIdAndUpdate(req.params.id, {
 		title: req.body.title,
 		description: req.body.description,
